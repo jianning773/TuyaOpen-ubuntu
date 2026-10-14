@@ -113,7 +113,11 @@ def is_cross_compile():
         # Check if running on Raspberry Pi
         if "raspberry pi" in device_model:
             return False
-        
+
+        # Check if running on D-Robotics X5 (RDK X5 / DP-X5)
+        if "d-robotics x5" in device_model:
+            return False
+
         # Other devices need cross-compilation
         return True
         
@@ -351,6 +355,11 @@ def prepare_ubuntu():
     print("Ubuntu platform preparation complete")
     return True
 
+def prepare_x5():
+    """Prepare D-Robotics X5 platform"""
+    toolchain_root = get_toolchain_root()
+    return download_and_setup_toolchain(toolchain_root, AARCH64_14_2_TOOLCHAIN_CONFIGS)
+
 # ============================================================================
 # Program Entry
 # ============================================================================
@@ -369,6 +378,7 @@ def main():
         "DshanPi_A1": prepare_dshanpi_a1,
         "Ubuntu": prepare_ubuntu,
         "RK3576": prepare_rk3576,
+        "X5": prepare_x5,
     }
 
     if not is_cross_compile():
