@@ -315,14 +315,27 @@ def download_and_setup_toolchain(toolchain_root, toolchain_config):
         new_entries = current_entries - existing_entries
 
         if new_entries and config["folder"] not in new_entries:
-            extracted_name = list(new_entries)[0]
-            actual_folder = os.path.join(toolchain_root, extracted_name)
+            if len(new_entries) == 1:
+                extracted_name = next(iter(new_entries))
+                actual_folder = os.path.join(toolchain_root, extracted_name)
 
-            if os.path.isdir(actual_folder):
-                print(f"Renaming '{extracted_name}' -> '{config['folder']}'")
+                if os.path.isdir(actual_folder):
+                    print(f"Renaming '{extracted_name}' -> '{config['folder']}'")
+                    if os.path.exists(toolchain_folder):
+                        rm_rf(toolchain_folder)
+                    shutil.move(actual_folder, toolchain_folder)
+            else:
+                # Multi-root archive: the mingw-w64 Windows toolchain zip
+                # extracts bin/, include/, lib/, share/ ... at the top level
+                # instead of a single wrapping directory. Gather every new
+                # entry into the target folder.
+                print(f"Gathering {len(new_entries)} extracted entries into '{config['folder']}'")
                 if os.path.exists(toolchain_folder):
                     rm_rf(toolchain_folder)
-                shutil.move(actual_folder, toolchain_folder)
+                os.makedirs(toolchain_folder)
+                for name in sorted(new_entries):
+                    shutil.move(os.path.join(toolchain_root, name),
+                                os.path.join(toolchain_folder, name))
 
         if os.path.exists(toolchain_folder):
             print("=" * 60)
