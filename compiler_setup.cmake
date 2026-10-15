@@ -49,6 +49,13 @@ if (IS_CROSS_COMPILE)
     # linker rejects (unrecognized option '--major-image-version').
     set(CMAKE_SYSTEM_NAME Linux)
     set(CMAKE_SYSTEM_PROCESSOR aarch64)
+    # The Arm GNU toolchain's libm.so linker script GROUPs libm.so.6 and
+    # libmvec.so.1, so every -lm link records a libmvec.so.1 DT_NEEDED entry
+    # even when all vector-math symbols are provided by mvec_impl.c. Targets
+    # without libmvec (e.g. Ubuntu 22.04 aarch64) then fail to load the binary
+    # with "libmvec.so.1: cannot open shared object file". Drop unneeded
+    # shared-library dependencies at link time instead.
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--as-needed")
     set(TOOLCHAIN_PREFIX "")
     if (PLATFORM_BOARD STREQUAL "Raspberry_Pi")
         get_filename_component(TOOLCHAIN_PREFIX "${TOOLCHAIN_PATH}/aarch64-none-linux-gnu-14.2-2024.10/bin" ABSOLUTE)
