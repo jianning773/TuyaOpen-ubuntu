@@ -165,8 +165,6 @@ def download_file(url, file_path):
     try:
         print(f"Start downloading: {os.path.basename(file_path)}")
         context = ssl._create_unverified_context()
-        urllib.request.install_opener(urllib.request.build_opener(
-            urllib.request.HTTPSHandler(context=context)))
         urllib.request.urlretrieve(url, file_path, reporthook=show_progress)
         return True
     except Exception as e:
