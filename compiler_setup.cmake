@@ -43,6 +43,12 @@ endif()
 get_filename_component(TOOLCHAIN_PATH "${CMAKE_CURRENT_LIST_DIR}/../tools/" ABSOLUTE)
 
 if (IS_CROSS_COMPILE)
+    # Always declare the target system explicitly: on a Windows host the
+    # mingw-built aarch64 cross gcc gets identified as a MinGW compiler and
+    # CMake applies Windows PE link rules, which the aarch64-linux-gnu
+    # linker rejects (unrecognized option '--major-image-version').
+    set(CMAKE_SYSTEM_NAME Linux)
+    set(CMAKE_SYSTEM_PROCESSOR aarch64)
     set(TOOLCHAIN_PREFIX "")
     if (PLATFORM_BOARD STREQUAL "Raspberry_Pi")
         get_filename_component(TOOLCHAIN_PREFIX "${TOOLCHAIN_PATH}/aarch64-none-linux-gnu-14.2-2024.10/bin" ABSOLUTE)
