@@ -323,10 +323,6 @@ def download_and_setup_toolchain(toolchain_root, toolchain_config):
                         rm_rf(toolchain_folder)
                     shutil.move(actual_folder, toolchain_folder)
             else:
-                # Multi-root archive: the mingw-w64 Windows toolchain zip
-                # extracts bin/, include/, lib/, share/ ... at the top level
-                # instead of a single wrapping directory. Gather every new
-                # entry into the target folder.
                 print(f"Gathering {len(new_entries)} extracted entries into '{config['folder']}'")
                 if os.path.exists(toolchain_folder):
                     rm_rf(toolchain_folder)
